@@ -434,6 +434,7 @@ func (watcher *Watcher) setRoutesForDesired(logger lager.Logger, schedulingInfo 
 				Hostname:        hostname,
 				LogGuid:         schedulingInfo.LogGuid,
 				RouteServiceUrl: route.RouteServiceUrl,
+				PlacementTags:   schedulingInfo.PlacementTags,
 			})
 		}
 		routeEntries[key] = append(routeEntries[key], routes...)

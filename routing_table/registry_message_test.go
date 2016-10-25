@@ -22,6 +22,7 @@ var _ = Describe("RegistryMessage", func() {
 			PrivateInstanceIndex: "0",
 			RouteServiceUrl:      "https://hello.com",
 			Tags:                 map[string]string{"component": "route-emitter"},
+			PlacementTags:        []string{"p-1"},
 		}
 	})
 
@@ -37,7 +38,8 @@ var _ = Describe("RegistryMessage", func() {
 				"private_instance_id": "instance-guid",
 				"private_instance_index": "0",
 				"route_service_url": "https://hello.com",
-				"tags": {"component":"route-emitter"}
+				"tags": {"component":"route-emitter"},
+				"placement_tags": ["p-1"]
 			}`
 		})
 
@@ -70,6 +72,7 @@ var _ = Describe("RegistryMessage", func() {
 				Hostname:        "host-1.example.com",
 				LogGuid:         "app-guid",
 				RouteServiceUrl: "https://hello.com",
+				PlacementTags:   []string{"p-1"},
 			}
 
 			message := routing_table.RegistryMessageFor(endpoint, route)
@@ -88,6 +91,7 @@ var _ = Describe("RegistryMessage", func() {
 				Hostname:        "host-1.example.com",
 				LogGuid:         "app-guid",
 				RouteServiceUrl: "https://hello.com",
+				PlacementTags:   []string{"p-1"},
 			}
 
 			expectedMessage.PrivateInstanceIndex = "2"

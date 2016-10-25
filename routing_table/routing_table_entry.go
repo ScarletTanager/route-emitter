@@ -35,6 +35,7 @@ type Route struct {
 	Hostname        string
 	LogGuid         string
 	RouteServiceUrl string
+	PlacementTags   []string
 }
 
 type RoutableEndpoints struct {

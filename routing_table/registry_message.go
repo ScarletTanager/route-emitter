@@ -11,6 +11,7 @@ type RegistryMessage struct {
 	PrivateInstanceId    string            `json:"private_instance_id,omitempty"`
 	PrivateInstanceIndex string            `json:"private_instance_index,omitempty"`
 	Tags                 map[string]string `json:"tags,omitempty"`
+	PlacementTags        []string          `json:"placement_tags,omitempty"` // maybe this goes in Tags?
 }
 
 func RegistryMessageFor(endpoint Endpoint, route Route) RegistryMessage {
@@ -19,11 +20,12 @@ func RegistryMessageFor(endpoint Endpoint, route Route) RegistryMessage {
 		index = fmt.Sprintf("%d", endpoint.Index)
 	}
 	return RegistryMessage{
-		URIs: []string{route.Hostname},
-		Host: endpoint.Host,
-		Port: endpoint.Port,
-		App:  route.LogGuid,
-		Tags: map[string]string{"component": "route-emitter"},
+		URIs:          []string{route.Hostname},
+		Host:          endpoint.Host,
+		Port:          endpoint.Port,
+		App:           route.LogGuid,
+		Tags:          map[string]string{"component": "route-emitter"},
+		PlacementTags: route.PlacementTags,
 
 		PrivateInstanceId:    endpoint.InstanceGuid,
 		PrivateInstanceIndex: index,

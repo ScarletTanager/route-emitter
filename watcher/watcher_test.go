@@ -96,7 +96,7 @@ var _ = Describe("Watcher", func() {
 
 		dummyEndpoint := routing_table.Endpoint{InstanceGuid: expectedInstanceGuid, Index: expectedIndex, Host: expectedHost, Port: expectedContainerPort}
 		dummyMessageFoo := routing_table.RegistryMessageFor(dummyEndpoint, routing_table.Route{Hostname: "foo.com", LogGuid: logGuid})
-		dummyMessageBar := routing_table.RegistryMessageFor(dummyEndpoint, routing_table.Route{Hostname: "bar.com", LogGuid: logGuid})
+		dummyMessageBar := routing_table.RegistryMessageFor(dummyEndpoint, routing_table.Route{Hostname: "bar.com", LogGuid: logGuid, PlacementTags: []string{"p-1"}})
 		dummyMessagesToEmit = routing_table.MessagesToEmit{
 			RegistrationMessages: []routing_table.RegistryMessage{dummyMessageFoo, dummyMessageBar},
 		}
@@ -231,6 +231,33 @@ var _ = Describe("Watcher", func() {
 				Eventually(emitter.EmitCallCount).Should(Equal(2))
 				messagesToEmit := emitter.EmitArgsForCall(1)
 				Expect(messagesToEmit).To(Equal(dummyMessagesToEmit))
+			})
+
+			Context("when there are PlacementTags on the route", func() {
+				BeforeEach(func() {
+					desiredLRP.PlacementTags = []string{"p-1"}
+				})
+
+				It("register the placement tags on the table", func() {
+					Eventually(table.SetRoutesCallCount).Should(Equal(1))
+
+					key, routes, _ := table.SetRoutesArgsForCall(0)
+					Expect(key).To(Equal(expectedRoutingKey))
+					Expect(routes).To(ConsistOf(
+						routing_table.Route{
+							Hostname:        expectedRoutes[0],
+							LogGuid:         logGuid,
+							RouteServiceUrl: expectedRouteServiceUrl,
+							PlacementTags:   []string{"p-1"},
+						},
+						routing_table.Route{
+							Hostname:        expectedRoutes[1],
+							LogGuid:         logGuid,
+							RouteServiceUrl: expectedRouteServiceUrl,
+							PlacementTags:   []string{"p-1"},
+						},
+					))
+				})
 			})
 
 			Context("when there are diego ssh-keys on the route", func() {
@@ -451,6 +478,31 @@ var _ = Describe("Watcher", func() {
 				Eventually(emitter.EmitCallCount).Should(Equal(2))
 				messagesToEmit := emitter.EmitArgsForCall(1)
 				Expect(messagesToEmit).To(Equal(dummyMessagesToEmit))
+			})
+
+			Context("when there are PlacementTags on the route", func() {
+				BeforeEach(func() {
+					changedDesiredLRP.PlacementTags = []string{"p-1"}
+				})
+
+				It("register the placement tags on the table", func() {
+					Eventually(table.SetRoutesCallCount).Should(Equal(1))
+
+					key, routes, _ := table.SetRoutesArgsForCall(0)
+					Expect(key).To(Equal(expectedRoutingKey))
+					Expect(routes).To(ConsistOf(
+						routing_table.Route{
+							Hostname:      expectedRoutes[0],
+							LogGuid:       logGuid,
+							PlacementTags: []string{"p-1"},
+						},
+						routing_table.Route{
+							Hostname:      expectedRoutes[1],
+							LogGuid:       logGuid,
+							PlacementTags: []string{"p-1"},
+						},
+					))
+				})
 			})
 
 			Context("when there are diego ssh-keys on the route", func() {
